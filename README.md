@@ -1,3 +1,3 @@
-git remote add patterns https://github.com/Omprakashuched/EPDSS.git
+git remote add origin https://github.com/Omprakashuched/EPDSS.git
 git branch -M main
-git push -u patterns main 
+git push -u origin main 
