@@ -35,7 +35,7 @@ if (logForm) {
         }
 
         try {
-            const response = await fetch(`http://localhost:3000/api/logForm`, {
+            const response = await fetch(`https://opu-webapps.netlify.app/api/logForm`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json' // CORRECTED: Proper spelling and syntax
