@@ -1,3 +1,4 @@
+
 const logForm = document.getElementById('Form');
 
 if (logForm) {
