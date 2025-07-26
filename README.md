@@ -1,3 +1,3 @@
-git remote add origin https://github.com/Omprakashuched/EPDSS.git
+git remote add webf https://github.com/Omprakashuched/web-development-practice.git
 git branch -M main
-git push -u origin main 
+git push -u webf main 
