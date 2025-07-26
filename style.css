@@ -18,7 +18,7 @@ body {
     width: 100%;
     max-width: 400px;
     border: none;
-    position: relative; /* Added for positioning the eye icon */
+    position: relative;
 }
 
 h1 {
