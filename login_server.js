@@ -16,8 +16,8 @@ app.use(express.json());
 // *** CHANGE THIS CORS CONFIGURATION ***
 app.use(cors({
     origin: ['http://localhost:5500', 'http://127.0.0.1:5500', 'http://localhost:3000', 'http://127.0.0.1:3000', 'https://opu-webapps.netlify.app'],
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Explicitly allow methods your API uses
-    allowedHeaders: ['Content-Type', 'Authorization'] // Explicitly allow headers your client sends
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
 // ************************************
 
