@@ -48,7 +48,7 @@ h1 {
     margin-right: auto;
 }
 
-#userInputPassword {
+#userPasswordInput {
     width: 100%; /* Make input fill its container */
     padding: 10px;
     border: 1px solid #ccc;
@@ -58,7 +58,7 @@ h1 {
 }
 
 /* Style for the eye icon */
-.toggle-password {
+#togglePassword{
     position: absolute;
     right: 10px; /* Position from the right */
     top: 50%;
