@@ -11,12 +11,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Use process.env.PORT for deployment, fallback to 3000 for local development
-const port = process.env.PORT || 3000; 
+const port =  3000; 
 
 // MongoDB Connection
 // Use an environment variable for the MongoDB URI for security and deployment flexibility.
 // You MUST set MONGO_URI in your Render service's environment variables.
-const MONGO_URI = 'http://localhost:27017/logForm'; 
+const MONGO_URI = 'mongodb+srv://omprakashuched:Omkar@123@opu-cluster0.xawhjhq.mongodb.net/?retryWrites=true&w=majority&appName=opu-Cluster0'; 
 
 if (!MONGO_URI) {
     console.error("MONGO_URI environment variable is not set. Please set it for MongoDB connection.");
