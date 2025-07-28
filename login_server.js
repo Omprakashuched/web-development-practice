@@ -35,9 +35,9 @@ const server = http.createServer(async (req, res) => {
         'http://127.0.0.1:5500', 
         'http://localhost:3000', 
         'http://127.0.0.1:3000', 
-        'https://opu-webs.onrender.com' 
-        // Add your frontend's actual deployed URL here if it's different from opu-webs.onrender.com
-        // For example, if your frontend is on Netlify: 'https://opu-webapps.netlify.app'
+        'https://opu-webs.onrender.com',
+        'https://opu-webapps.netlify.app'
+
     ];
     const origin = req.headers.origin;
 
@@ -100,7 +100,7 @@ const server = http.createServer(async (req, res) => {
             }
         });
     } else {
-        // Handle 404 for other routes
+
         res.writeHead(404, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: `Not Found: ${req.method} ${req.url}` })); // Added req.url for debugging
     }
