@@ -18,6 +18,7 @@
   "dependencies": {
     "cors": "^2.8.5",
     "emoji-picker-element": "^1.26.3",
+    "express": "^5.1.0",
     "mongoose": "^8.16.5"
   },
   "keywords": [],
