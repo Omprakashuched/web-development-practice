@@ -12,14 +12,8 @@ import 'dotenv/config';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// --- IMPORTANT FIX 2: Use process.env.PORT for deployment ---
-// Render (and other hosting platforms) will set process.env.PORT.
-// If not set (e.g., local development without .env PORT), it defaults to 3000.
 const port = process.env.PORT || 3000; 
 
-// MongoDB Connection
-// --- IMPORTANT FIX 3: Get MONGO_URI from process.env ---
-// This ensures the correct URI is used whether from .env (local) or Render's environment variables.
 const MONGO_URI = process.env.MONGO_URI; 
 
 if (!MONGO_URI) {
@@ -27,8 +21,6 @@ if (!MONGO_URI) {
     process.exit(1); // Exit the process if the crucial MONGO_URI is missing
 }
 
-// --- FIX 4: Remove deprecated Mongoose options ---
-// These options are no longer needed with Mongoose 6.x and later, and cause warnings.
 mongoose.connect(MONGO_URI) 
 .then(() => console.log("MongoDB Connected"))
 .catch(err => console.error("Could not connect to MongoDB:", err)); // Improved error logging
@@ -44,17 +36,13 @@ const LogForm2 = mongoose.model('LogForm2', logFormSchema);
 
 // Create the HTTP server
 const server = http.createServer(async (req, res) => {
-    // Manually set CORS headers
-    // --- FIX 5: Ensure your deployed frontend URL is correct ---
-    // 'https://opu-webs.onrender.com' is likely a placeholder. 
-    // Replace with your actual Render frontend URL (e.g., https://your-frontend-name.onrender.com)
+    
     const allowedOrigins = [
         'http://localhost:5500', 
         'http://127.0.0.1:5500', 
         'http://localhost:3000', 
         'http://127.0.0.1:3000', 
-        'https://opu-webapps.netlify.app', // Your Netlify frontend URL (if still in use)
-        'https://your-frontend-name.onrender.com' // <--- IMPORTANT: Update this with your ACTUAL Render frontend URL
+        'https://opu-webs.onrender.com' 
     ];
     const origin = req.headers.origin;
 
