@@ -7,23 +7,23 @@ import path from "path";
 
 // --- IMPORTANT FIX 1: Load dotenv for local environment variables ---
 // This line MUST be at the very top of your file to load variables from .env
-import 'dotenv/config'; 
+import 'dotenv/config';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const port = process.env.PORT || 3000; 
+const port = process.env.PORT || 3000;
 
-const MONGO_URI = process.env.MONGO_URI; 
+const MONGO_URI = process.env.MONGO_URI;
 
 if (!MONGO_URI) {
     console.error("CRITICAL ERROR: MONGO_URI environment variable is not set. Please set it in .env (local) or Render (deployment).");
     process.exit(1); // Exit the process if the crucial MONGO_URI is missing
 }
 
-mongoose.connect(MONGO_URI) 
-.then(() => console.log("MongoDB Connected"))
-.catch(err => console.error("Could not connect to MongoDB:", err)); // Improved error logging
+mongoose.connect(MONGO_URI)
+    .then(() => console.log("MongoDB Connected"))
+    .catch(err => console.error("Could not connect to MongoDB:", err)); // Improved error logging
 
 // Mongoose Schema and Model
 const logFormSchema = new mongoose.Schema({
@@ -36,13 +36,13 @@ const LogForm2 = mongoose.model('LogForm2', logFormSchema);
 
 // Create the HTTP server
 const server = http.createServer(async (req, res) => {
-    
+
     const allowedOrigins = [
-        'http://localhost:5500', 
-        'http://127.0.0.1:5500', 
-        'http://localhost:3000', 
-        'http://127.0.0.1:3000', 
-        'https://opu-webs.onrender.com' 
+        'http://localhost:5500',
+        'http://127.0.0.1:5500',
+        'http://localhost:3000',
+        'http://127.0.0.1:3000',
+        'https://opu-webs.onrender.com'
     ];
     const origin = req.headers.origin;
 
@@ -60,7 +60,8 @@ const server = http.createServer(async (req, res) => {
     }
 
     // API to handle POST requests for creating a new log entry
-    if (req.method === 'POST' && req.url === '/api/logForm') {
+    const cleanUrl = req.url.split('?')[0].replace(/\/$/, ''); // Removes query params and trailing slash
+    if (req.method === 'POST' && cleanUrl === '/api/logForm') {
         let body = '';
         req.on('data', chunk => {
             body += chunk.toString(); // Convert Buffer to string
@@ -113,5 +114,5 @@ const server = http.createServer(async (req, res) => {
 server.listen(port, () => {
     console.log(`Back-End server running on http://localhost:${port}`);
     // --- FIX 7: Log the actual port being used ---
-    console.log(`Server listening on port ${port}`); 
+    console.log(`Server listening on port ${port}`);
 });
