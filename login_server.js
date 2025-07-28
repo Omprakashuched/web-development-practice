@@ -1,35 +1,37 @@
 import http from 'http';
 import mongoose from "mongoose";
-// CORS is handled manually in this raw HTTP server, so the 'cors' package is not needed.
-// import cors from "cors"; 
 import { fileURLToPath } from 'url';
 import path from "path";
-// Removed appendFile, readFile as they are not used in this snippet
+// Removed unused imports: appendFile, readFile
 // import { appendFile, readFile } from "fs/promises"; 
+
+// --- IMPORTANT FIX 1: Load dotenv for local environment variables ---
+// This line MUST be at the very top of your file to load variables from .env
+import 'dotenv/config'; 
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Use process.env.PORT for deployment, fallback to 3000 for local development
-const port =  3000; 
+// --- IMPORTANT FIX 2: Use process.env.PORT for deployment ---
+// Render (and other hosting platforms) will set process.env.PORT.
+// If not set (e.g., local development without .env PORT), it defaults to 3000.
+const port = process.env.PORT || 3000; 
 
 // MongoDB Connection
-// Use an environment variable for the MongoDB URI for security and deployment flexibility.
-// You MUST set MONGO_URI in your Render service's environment variables.
-const MONGO_URI = 'mongodb+srv://omprakashuched:Omkar@123@opu-cluster0.xawhjhq.mongodb.net/'; 
+// --- IMPORTANT FIX 3: Get MONGO_URI from process.env ---
+// This ensures the correct URI is used whether from .env (local) or Render's environment variables.
+const MONGO_URI = process.env.MONGO_URI; 
 
 if (!MONGO_URI) {
-    console.error("MONGO_URI environment variable is not set. Please set it for MongoDB connection.");
-    // In a production app, you might want to gracefully exit or prevent server start here.
-    process.exit(1); 
+    console.error("CRITICAL ERROR: MONGO_URI environment variable is not set. Please set it in .env (local) or Render (deployment).");
+    process.exit(1); // Exit the process if the crucial MONGO_URI is missing
 }
 
-mongoose.connect(MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
+// --- FIX 4: Remove deprecated Mongoose options ---
+// These options are no longer needed with Mongoose 6.x and later, and cause warnings.
+mongoose.connect(MONGO_URI) 
 .then(() => console.log("MongoDB Connected"))
-.catch(err => console.error("Could not connect to MongoDB", err));
+.catch(err => console.error("Could not connect to MongoDB:", err)); // Improved error logging
 
 // Mongoose Schema and Model
 const logFormSchema = new mongoose.Schema({
@@ -43,14 +45,16 @@ const LogForm2 = mongoose.model('LogForm2', logFormSchema);
 // Create the HTTP server
 const server = http.createServer(async (req, res) => {
     // Manually set CORS headers
+    // --- FIX 5: Ensure your deployed frontend URL is correct ---
+    // 'https://opu-webs.onrender.com' is likely a placeholder. 
+    // Replace with your actual Render frontend URL (e.g., https://your-frontend-name.onrender.com)
     const allowedOrigins = [
         'http://localhost:5500', 
         'http://127.0.0.1:5500', 
         'http://localhost:3000', 
         'http://127.0.0.1:3000', 
         'https://opu-webapps.netlify.app', // Your Netlify frontend URL (if still in use)
-        'https://opu-webs.onrender.com' // Example: Your Render frontend URL. UPDATE THIS!
-        // Add any other specific deployed frontend URLs here
+        'https://your-frontend-name.onrender.com' // <--- IMPORTANT: Update this with your ACTUAL Render frontend URL
     ];
     const origin = req.headers.origin;
 
@@ -76,7 +80,17 @@ const server = http.createServer(async (req, res) => {
 
         req.on('end', async () => {
             try {
-                const { name, password } = JSON.parse(body);
+                // --- FIX 6: Handle potential JSON parsing errors ---
+                let parsedBody;
+                try {
+                    parsedBody = JSON.parse(body);
+                } catch (jsonError) {
+                    res.writeHead(400, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ error: "Invalid JSON in request body." }));
+                    return;
+                }
+
+                const { name, password } = parsedBody;
 
                 if (!name || !password) {
                     res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -110,4 +124,6 @@ const server = http.createServer(async (req, res) => {
 // Start the server
 server.listen(port, () => {
     console.log(`Back-End server running on http://localhost:${port}`);
+    // --- FIX 7: Log the actual port being used ---
+    console.log(`Server listening on port ${port}`); 
 });
