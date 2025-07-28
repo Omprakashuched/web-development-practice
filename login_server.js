@@ -35,9 +35,8 @@ const server = http.createServer(async (req, res) => {
         'http://127.0.0.1:5500', 
         'http://localhost:3000', 
         'http://127.0.0.1:3000', 
-        'https://opu-webs.onrender.com',
-        'https://opu-webapps.netlify.app'
-
+        'https://opu-webs.onrender.com', 
+        'https://opu-webapps.netlify.app' // Ensure your Netlify frontend URL is here
     ];
     const origin = req.headers.origin;
 
@@ -53,11 +52,11 @@ const server = http.createServer(async (req, res) => {
         return;
     }
 
-    // --- IMPORTANT FIX FOR URL MATCHING ---
-    // Clean the URL: remove query parameters and trailing slashes for robust matching
-    const cleanUrl = req.url.split('?')[0].replace(/\/+$/, ''); // Removes query string and any trailing slashes
+    // --- ADDED DETAILED LOGGING HERE ---
+    console.log(`Incoming Request: Method=${req.method}, URL=${req.url}`);
+    const cleanUrl = req.url.split('?')[0].replace(/\/+$/, ''); 
+    console.log(`Cleaned URL: ${cleanUrl}`);
 
-    // API to handle POST requests for creating a new log entry
     if (req.method === 'POST' && cleanUrl === '/api/logForm') {
         let body = '';
         req.on('data', chunk => {
@@ -70,6 +69,7 @@ const server = http.createServer(async (req, res) => {
                 try {
                     parsedBody = JSON.parse(body);
                 } catch (jsonError) {
+                    console.error("JSON parsing error:", jsonError); // Log JSON error
                     res.writeHead(400, { 'Content-Type': 'application/json' });
                     res.end(JSON.stringify({ error: "Invalid JSON in request body." }));
                     return;
@@ -100,9 +100,9 @@ const server = http.createServer(async (req, res) => {
             }
         });
     } else {
-
+        // Handle 404 for other routes
         res.writeHead(404, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: `Not Found: ${req.method} ${req.url}` })); // Added req.url for debugging
+        res.end(JSON.stringify({ error: `Not Found: Method=${req.method}, Path=${req.url}` })); // More specific 404
     }
 });
 
