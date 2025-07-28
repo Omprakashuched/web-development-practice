@@ -2,30 +2,24 @@ import http from 'http';
 import mongoose from "mongoose";
 import { fileURLToPath } from 'url';
 import path from "path";
-// Removed unused imports: appendFile, readFile
-// import { appendFile, readFile } from "fs/promises"; 
-
-// --- IMPORTANT FIX 1: Load dotenv for local environment variables ---
-// This line MUST be at the very top of your file to load variables from .env
-import 'dotenv/config';
+import 'dotenv/config'; 
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3000; 
 
-const MONGO_URI = process.env.MONGO_URI;
+const MONGO_URI = process.env.MONGO_URI; 
 
 if (!MONGO_URI) {
     console.error("CRITICAL ERROR: MONGO_URI environment variable is not set. Please set it in .env (local) or Render (deployment).");
-    process.exit(1); // Exit the process if the crucial MONGO_URI is missing
+    process.exit(1); 
 }
 
-mongoose.connect(MONGO_URI)
-    .then(() => console.log("MongoDB Connected"))
-    .catch(err => console.error("Could not connect to MongoDB:", err)); // Improved error logging
+mongoose.connect(MONGO_URI) 
+.then(() => console.log("MongoDB Connected"))
+.catch(err => console.error("Could not connect to MongoDB:", err)); 
 
-// Mongoose Schema and Model
 const logFormSchema = new mongoose.Schema({
     Name: { type: String, required: true },
     Password: { type: String, required: true },
@@ -34,15 +28,16 @@ const logFormSchema = new mongoose.Schema({
 
 const LogForm2 = mongoose.model('LogForm2', logFormSchema);
 
-// Create the HTTP server
 const server = http.createServer(async (req, res) => {
-
+    
     const allowedOrigins = [
-        'http://localhost:5500',
-        'http://127.0.0.1:5500',
-        'http://localhost:3000',
-        'http://127.0.0.1:3000',
-        'https://opu-webs.onrender.com'
+        'http://localhost:5500', 
+        'http://127.0.0.1:5500', 
+        'http://localhost:3000', 
+        'http://127.0.0.1:3000', 
+        'https://opu-webs.onrender.com' 
+        // Add your frontend's actual deployed URL here if it's different from opu-webs.onrender.com
+        // For example, if your frontend is on Netlify: 'https://opu-webapps.netlify.app'
     ];
     const origin = req.headers.origin;
 
@@ -52,24 +47,25 @@ const server = http.createServer(async (req, res) => {
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-    // Handle preflight requests (OPTIONS method)
     if (req.method === 'OPTIONS') {
-        res.writeHead(204); // No Content
+        res.writeHead(204); 
         res.end();
         return;
     }
 
+    // --- IMPORTANT FIX FOR URL MATCHING ---
+    // Clean the URL: remove query parameters and trailing slashes for robust matching
+    const cleanUrl = req.url.split('?')[0].replace(/\/+$/, ''); // Removes query string and any trailing slashes
+
     // API to handle POST requests for creating a new log entry
-    const cleanUrl = req.url.split('?')[0].replace(/\/$/, ''); // Removes query params and trailing slash
     if (req.method === 'POST' && cleanUrl === '/api/logForm') {
         let body = '';
         req.on('data', chunk => {
-            body += chunk.toString(); // Convert Buffer to string
+            body += chunk.toString(); 
         });
 
         req.on('end', async () => {
             try {
-                // --- FIX 6: Handle potential JSON parsing errors ---
                 let parsedBody;
                 try {
                     parsedBody = JSON.parse(body);
@@ -106,13 +102,11 @@ const server = http.createServer(async (req, res) => {
     } else {
         // Handle 404 for other routes
         res.writeHead(404, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'Not Found' }));
+        res.end(JSON.stringify({ error: `Not Found: ${req.method} ${req.url}` })); // Added req.url for debugging
     }
 });
 
-// Start the server
 server.listen(port, () => {
     console.log(`Back-End server running on http://localhost:${port}`);
-    // --- FIX 7: Log the actual port being used ---
-    console.log(`Server listening on port ${port}`);
+    console.log(`Server listening on port ${port}`); 
 });
