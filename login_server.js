@@ -25,7 +25,8 @@ app.use(cors({
 app.use(express.static(path.join(__dirname, 'project2')));
 
 // MongoDB Connection
-mongoose.connect('mongodb://localhost:27017/logForm', {
+const MONGO_URI= 'mongodb://localhost:27017/logForm'
+mongoose.connect(MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
