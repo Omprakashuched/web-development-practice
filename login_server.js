@@ -16,7 +16,7 @@ const port =  3000;
 // MongoDB Connection
 // Use an environment variable for the MongoDB URI for security and deployment flexibility.
 // You MUST set MONGO_URI in your Render service's environment variables.
-const MONGO_URI = 'mongodb+srv://omprakashuched:Omkar@123@opu-cluster0.xawhjhq.mongodb.net/?retryWrites=true&w=majority&appName=opu-Cluster0'; 
+const MONGO_URI = 'mongodb+srv://omprakashuched:Omkar@123@opu-cluster0.xawhjhq.mongodb.net/'; 
 
 if (!MONGO_URI) {
     console.error("MONGO_URI environment variable is not set. Please set it for MongoDB connection.");
